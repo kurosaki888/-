@@ -1,213 +1,360 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mechanic Management System</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crafting Manager | 武器・手芸</title>
 <style>
-:root{--bg:#0b0e12;--panel:#141820;--panel2:#191e27;--line:#2a313d;--text:#f4f6f8;--muted:#9ba5b3;--accent:#f2c45b;--danger:#ff6b6b;--ok:#67d58b}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif}
-button,input,select,textarea{font:inherit}button{cursor:pointer}
-.app{display:flex;min-height:100vh}.side{width:245px;background:#101319;border-right:1px solid var(--line);padding:20px 14px;position:fixed;inset:0 auto 0 0;z-index:5}.brand{font-weight:800;font-size:19px;padding:8px 10px 22px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
-.nav{display:grid;gap:6px}.nav button{border:0;background:transparent;color:#b8c0cc;text-align:left;padding:12px;border-radius:10px}.nav button.active,.nav button:hover{background:#1d232d;color:#fff}.main{margin-left:245px;width:calc(100% - 245px);padding:26px;max-width:1500px}
-.top{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:20px}.top h1{margin:0;font-size:27px}.top p{margin:5px 0 0;color:var(--muted);font-size:13px}
-.btn{border:1px solid var(--line);background:#1b2029;color:#fff;padding:9px 13px;border-radius:9px}.btn.primary{background:#f2c45b;color:#17130a;border-color:#f2c45b;font-weight:800}.btn.danger{color:#ff9b9b}
-.grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(5,minmax(0,1fr));margin-bottom:18px}.stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px}.stat{padding:16px}.stat .label{font-size:12px;color:var(--muted)}.stat b{font-size:25px;display:block;margin-top:5px}.panel{padding:18px}.panel h2{font-size:17px;margin:0 0 14px}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}.toolbar input,.toolbar select,.field input,.field select,.field textarea{background:#0e1218;color:#fff;border:1px solid #333b48;border-radius:8px;padding:9px}.toolbar input{min-width:220px}
-.members{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}.member{background:var(--panel2);border:1px solid var(--line);border-left:5px solid #555;border-radius:12px;padding:15px}.member.paid{box-shadow:inset 0 0 0 1px rgba(103,213,139,.15)}.member .head{display:flex;justify-content:space-between;gap:10px}.member .name{font-size:17px;font-weight:800}.rank{font-size:12px;color:var(--muted);margin-top:3px}.badge{display:inline-block;border-radius:99px;padding:3px 8px;font-size:11px;font-weight:800;margin-top:8px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.field label{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}.field input,.field select{width:100%}.field.full{grid-column:1/-1}.field textarea{width:100%;min-height:65px;resize:vertical}.check{display:flex;gap:7px;align-items:center;font-size:12px;white-space:nowrap}.check input{width:18px;height:18px;accent-color:var(--ok)}
-.owner{border-left-color:#f2c45b;background:linear-gradient(90deg,rgba(242,196,91,.10),var(--panel2) 35%)}.chief{border-left-color:#b78cff}.first{border-left-color:#61a8ff}.second{border-left-color:#55d6c2}.mechanic{border-left-color:#70d66b}.trainee{border-left-color:#ff9d5c}
-.owner .badge{color:#f2c45b;background:#2d2717}.chief .badge{color:#c9a9ff;background:#28203b}.first .badge{color:#83bcff;background:#172b45}.second .badge{color:#72e1d0;background:#17312e}.mechanic .badge{color:#8be787;background:#19301b}.trainee .badge{color:#ffb27d;background:#352318}
-.tablewrap{overflow:auto}.table{width:100%;border-collapse:collapse;font-size:13px}.table th,.table td{padding:11px 9px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}.table th{color:var(--muted);font-size:11px}
-.timeline{border-left:2px solid #343b47;padding-left:16px;display:grid;gap:13px}.event{position:relative}.event:before{content:"";position:absolute;left:-23px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--accent)}.event b{display:block}.event small{color:var(--muted)}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:20;padding:18px}.modal.show{display:flex}.modalbox{width:min(650px,100%);max-height:90vh;overflow:auto;background:#151a22;border:1px solid var(--line);border-radius:15px;padding:20px}.modalhead{display:flex;justify-content:space-between;align-items:center}.modalhead h2{margin:0}.form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}.form .full{grid-column:1/-1}.form label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.form input,.form select,.form textarea{width:100%;background:#0e1218;color:#fff;border:1px solid #333b48;border-radius:8px;padding:10px}.form textarea{min-height:90px}.modalfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
-.toast{position:fixed;right:20px;bottom:20px;background:#202732;border:1px solid var(--line);padding:12px 15px;border-radius:10px;display:none;z-index:30}.toast.show{display:block}
-.hidden{display:none!important}.empty{text-align:center;color:var(--muted);padding:35px}
-@media(max-width:900px){.side{width:72px}.brand span,.brand small,.nav button span{display:none}.nav button{text-align:center}.main{margin-left:72px;width:calc(100% - 72px)}.stats{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.main{padding:15px}.top{align-items:flex-start}.top h1{font-size:22px}.stats{grid-template-columns:1fr 1fr}.fields,.form{grid-template-columns:1fr}.field.full,.form .full{grid-column:auto}.members{grid-template-columns:1fr}.toolbar input{min-width:100%}}
+:root{
+  --bg:#0b0a0f;--panel:#17151d;--panel2:#211f2b;--card:#292736;
+  --line:#3b384b;--accent:#6570a6;--text:#f5f3f6;--muted:#aaa6b4;
+  --ok:#7bd69a;--bad:#f06b65;--warn:#e7b866;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 15% 0,#302e4b,#0d0c12 40%,#08070b);color:var(--text);font-family:system-ui,"Noto Sans JP",sans-serif}
+button,input{font:inherit}
+button{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:8px;padding:9px 13px;cursor:pointer}
+button:hover,button.active{background:var(--accent);border-color:var(--accent)}
+header{position:sticky;top:0;z-index:20;background:#0d0c12ee;backdrop-filter:blur(15px);border-bottom:1px solid var(--line);padding:15px 22px}
+.head{max-width:1450px;margin:auto;display:flex;gap:18px;align-items:center;justify-content:space-between}
+h1{margin:0;font-size:23px}.sub,.hint,.meta{color:var(--muted);font-size:11px}.sub{margin-top:4px}
+.search{width:390px;max-width:42vw;background:var(--panel2);border:1px solid var(--line);color:#fff;padding:11px 13px;border-radius:9px;outline:0}
+main{max-width:1450px;margin:auto;padding:20px}
+.modebar{display:flex;gap:8px;margin-bottom:15px}
+.modebar button{font-weight:700;padding:10px 18px}
+.modebar button.active{box-shadow:0 0 0 2px #6570a633}
+.tabs,.filters{display:flex;gap:8px;flex-wrap:wrap}
+.tabs{margin-bottom:17px}.filters{margin-bottom:15px}
+.view{display:none}.view.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:17px}
+.stat,.inventory,.plan,.material-card{background:#211f2acc;border:1px solid var(--line);border-radius:12px}
+.stat{padding:13px}.stat b{display:block;font-size:21px}.stat span{font-size:11px;color:var(--muted)}
+.inventory,.plan{padding:17px;margin-bottom:17px}
+.inv-head,.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+h2{font-size:18px;margin:0}.inventory h2+.hint{margin:4px 0 0}
+.inv-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+.inv{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#2b2937;border:1px solid #403d4d;border-radius:8px;padding:9px;font-size:12px}
+.inv input,.qty{width:82px;background:#15131b;border:1px solid #4a4758;color:#fff;border-radius:6px;padding:7px;text-align:right;outline:0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.card{background:linear-gradient(145deg,#292736,#18161e);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.top{display:flex;gap:12px;padding:14px;border-bottom:1px solid var(--line)}
+.icon{width:55px;height:55px;border-radius:9px;background:#353342;display:grid;place-items:center;font-size:25px;flex:none}
+.name{font-weight:700;font-size:15px}.body{padding:13px}
+.mats{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.mat{background:#302e3d;border:1px solid #413e4f;border-radius:6px;padding:6px 8px;font-size:11px}
+.mat b{font-size:13px}
+.craft{margin-top:9px;padding:9px 10px;border-radius:8px;background:#303040;display:flex;justify-content:space-between}
+.ready{color:var(--ok);font-weight:800}.zero{color:var(--bad);font-weight:800}
+.actions{display:flex;gap:6px;margin-top:9px}.actions button{padding:7px 9px;font-size:11px}.fav{margin-left:auto}
+.plan-row{display:grid;grid-template-columns:1fr 90px 70px 60px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.total{display:flex;justify-content:space-between;font-weight:700;padding-top:13px}
+.deficit{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.def-item{background:#342226;border:1px solid #633b40;border-radius:8px;padding:10px}
+.def-item b{color:var(--bad);display:block}.def-item span{font-size:11px;color:var(--muted)}
+.reverse-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.material-card{padding:14px}.material-card h3{margin:0 0 8px}.material-card li{margin:4px 0;color:var(--muted);font-size:12px}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:50px}
+.notice{background:#24222e;border:1px solid var(--line);padding:12px;border-radius:10px;margin-bottom:15px;color:var(--muted);font-size:12px}
+.badge{display:inline-block;padding:3px 7px;border-radius:999px;background:#353342;color:#cfcde0;font-size:10px;margin-left:6px}
+.toast{position:fixed;right:20px;bottom:20px;background:#24222e;border:1px solid var(--line);padding:11px 14px;border-radius:8px;opacity:0;transform:translateY(10px);transition:.2s;z-index:50}
+.toast.show{opacity:1;transform:none}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:28px}
+@media(max-width:1100px){.grid,.reverse-grid{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(3,1fr)}.inv-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){
+ .head{display:block}.search{width:100%;max-width:none;margin-top:12px}main{padding:13px 10px}
+ .grid,.reverse-grid{grid-template-columns:1fr}.stats,.inv-grid{grid-template-columns:repeat(2,1fr)}
+ .plan-row{grid-template-columns:1fr 75px 45px 50px}.inv input{width:70px}
+}
 </style>
 </head>
 <body>
-<div class="app">
-<aside class="side">
-  <div class="brand">🔧 <span>MECHANIC</span><small>社員管理システム</small></div>
-  <nav class="nav">
-    <button class="active" data-page="dashboard">📊 <span>ダッシュボード</span></button>
-    <button data-page="members">👥 <span>メンバー管理</span></button>
-    <button data-page="bonus">💰 <span>ボーナス管理</span></button>
-    <button data-page="history">📜 <span>支給履歴</span></button>
-    <button data-page="promotion">📈 <span>昇格履歴</span></button>
-  </nav>
-</aside>
+<header>
+  <div class="head">
+    <div>
+      <h1>🔧 Crafting Manager</h1>
+      <div class="sub">FiveM / ECO CRAFTING — 武器・手芸レシピ、素材在庫、製作可能数を一括管理</div>
+    </div>
+    <input id="search" class="search" placeholder="製作物・素材を検索…">
+  </div>
+</header>
 
-<main class="main">
-<section id="dashboard" class="page">
-  <div class="top"><div><h1>📊 ダッシュボード</h1><p>メカニックの現在状況をまとめて確認できます。</p></div><button class="btn primary" onclick="openMember()">＋ メンバー追加</button></div>
-  <div class="grid stats" id="stats"></div>
-  <div class="panel" style="margin-bottom:18px"><h2>💎 階級別ボーナス額（満額基準）</h2><div id="bonusRates" class="grid members" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))"></div></div>
-  <div class="panel"><h2>🔴 未支給メンバー</h2><div id="unpaidDash"></div></div>
-</section>
+<main>
+  <div class="modebar">
+    <button class="mode active" data-mode="weapon">🔫 武器クラフト</button>
+    <button class="mode" data-mode="handicraft">🧵 手芸クラフト</button>
+  </div>
 
-<section id="members" class="page hidden">
-  <div class="top"><div><h1>👥 メンバー管理</h1><p>名前・階級・メモ・昇格履歴を管理します。</p></div><button class="btn primary" onclick="openMember()">＋ メンバー追加</button></div>
-  <div class="toolbar"><input id="memberSearch" placeholder="名前を検索"><select id="memberRank"><option value="all">全階級</option></select></div>
-  <div class="grid members" id="memberList"></div>
-</section>
+  <div class="tabs">
+    <button class="tab active" data-view="dashboard">📊 ダッシュボード</button>
+    <button class="tab" data-view="recipes">📋 レシピ一覧</button>
+    <button class="tab" data-view="inventory">📦 素材在庫</button>
+    <button class="tab" data-view="plan">🧮 クラフト計画</button>
+    <button class="tab" data-view="reverse">🔎 素材から逆引き</button>
+    <button class="tab" data-view="favorites">⭐ お気に入り</button>
+  </div>
 
-<section id="bonus" class="page hidden">
-  <div class="top"><div><h1>💰 ボーナス管理</h1><p>支給状況・金額・支給日を管理します。</p></div><button class="btn primary" onclick="newBonus()">＋ 今回のボーナス</button></div>
-  <div class="toolbar"><input id="bonusSearch" placeholder="名前を検索"><select id="bonusRank"><option value="all">全階級</option></select><select id="bonusStatus"><option value="all">全員</option><option value="unpaid">未支給のみ</option><option value="paid">支給済みのみ</option></select></div>
-  <div class="grid members" id="bonusList"></div>
-</section>
+  <section id="dashboard" class="view active">
+    <div class="stats">
+      <div class="stat"><b id="recipeCount">0</b><span>登録製作物</span></div>
+      <div class="stat"><b id="materialCount">10</b><span>素材一覧</span></div>
+      <div class="stat"><b id="readyCount">0</b><span>今すぐ作れる種類</span></div>
+      <div class="stat"><b id="favCount">0</b><span>お気に入り</span></div>
+      <div class="stat"><b id="planCount">0</b><span>クラフト計画個数</span></div>
+      <div class="stat"><b id="modeCount">0</b><span>現在のモード</span></div>
+    </div>
+    <div class="notice">💡 素材在庫に所持数を入力すると、各レシピの「製作可能数」が自動計算されます。武器・手芸を切り替えても素材在庫は共通です。<br>📸 手芸レシピは今回送ってもらったスクリーンショットを基準に追加・更新しています。</div>
+    <div class="inventory">
+      <div class="inv-head">
+        <div><h2>📦 現在の素材在庫</h2><p class="hint">入力内容はこのブラウザに自動保存されます。</p></div>
+        <button id="resetInv">在庫をリセット</button>
+      </div>
+      <div id="dashInv" class="inv-grid"></div>
+    </div>
+    <div class="section-head"><div><h2>🟢 現在作れる製作物</h2><p class="hint">現在のモードで、所持素材から1個以上作れるもの</p></div></div>
+    <div id="readyGrid" class="grid"></div>
+  </section>
 
-<section id="history" class="page hidden">
-  <div class="top"><div><h1>📜 支給履歴</h1><p>過去のボーナス支給記録を残します。</p></div></div>
-  <div class="panel"><div class="tablewrap"><table class="table"><thead><tr><th>支給回</th><th>名前</th><th>階級</th><th>金額</th><th>支給日</th></tr></thead><tbody id="historyTable"></tbody></table></div></div>
-</section>
+  <section id="recipes" class="view">
+    <div id="filters" class="filters"></div>
+    <div id="recipeGrid" class="grid"></div>
+  </section>
 
-<section id="promotion" class="page hidden">
-  <div class="top"><div><h1>📈 昇格履歴</h1><p>メンバーごとの階級変更を時系列で確認できます。</p></div></div>
-  <div class="panel"><div id="promotionList"></div></div>
-</section>
+  <section id="inventory" class="view">
+    <div class="inventory">
+      <div class="inv-head">
+        <div><h2>📦 素材在庫管理</h2><p class="hint">持っている数を入力すると、武器・手芸の両方で自動計算されます。</p></div>
+        <button id="resetInv2">全部0にする</button>
+      </div>
+      <div id="fullInv" class="inv-grid"></div>
+    </div>
+  </section>
+
+  <section id="plan" class="view">
+    <div class="plan">
+      <div class="section-head">
+        <div><h2>🧮 クラフト計画</h2><p class="hint">作りたい個数から必要素材と不足素材を計算。</p></div>
+        <button id="clearPlan">計画をクリア</button>
+      </div>
+      <div id="planRows"></div>
+      <div class="total"><span>計画総個数</span><span id="planTotal">0個</span></div>
+    </div>
+    <div class="plan">
+      <h2>🔴 不足素材</h2><p class="hint">現在のモードの計画と現在庫を比較</p>
+      <div id="deficits" class="deficit"></div>
+    </div>
+  </section>
+
+  <section id="reverse" class="view">
+    <div class="section-head"><div><h2>🔎 素材から逆引き</h2><p class="hint">現在のモードで各素材を使用するレシピを一覧表示。</p></div></div>
+    <div id="reverseGrid" class="reverse-grid"></div>
+  </section>
+
+  <section id="favorites" class="view">
+    <div class="section-head"><div><h2>⭐ お気に入り</h2><p class="hint">よく使うレシピを登録。</p></div></div>
+    <div id="favGrid" class="grid"></div>
+  </section>
 </main>
-</div>
 
-<div class="modal" id="memberModal">
-<div class="modalbox"><div class="modalhead"><h2 id="memberModalTitle">メンバー追加</h2><button class="btn" onclick="closeModal('memberModal')">✕</button></div>
-<form class="form" id="memberForm">
-<input type="hidden" id="editId">
-<div><label>名前</label><input id="mName" required></div>
-<div><label>現在の階級</label><select id="mRank"></select></div>
-<div class="full"><label>管理者メモ</label><textarea id="mMemo" placeholder="勤務態度、昇格候補など"></textarea></div>
-<div class="full"><label><input type="checkbox" id="mOwner"> オーナーとして登録</label></div>
-</form>
-<div class="modalfoot"><button class="btn" onclick="closeModal('memberModal')">キャンセル</button><button class="btn primary" onclick="saveMember()">保存</button></div>
-</div></div>
-
-<div class="modal" id="confirmModal">
-<div class="modalbox"><div class="modalhead"><h2>⚠️ 支給確認</h2><button class="btn" onclick="closeModal('confirmModal')">✕</button></div>
-<p id="confirmText"></p><div class="modalfoot"><button class="btn" onclick="closeModal('confirmModal')">キャンセル</button><button class="btn primary" id="confirmBtn">支給済みにする</button></div></div>
-</div>
-<div class="toast" id="toast"></div>
+<footer>Crafting Manager — 武器・手芸 / 在庫・お気に入り・クラフト計画はブラウザに保存</footer>
+<div id="toast" class="toast"></div>
 
 <script>
-const ranks=["オーナー","チーフ","1級整備士","2級整備士","整備士","見習い整備士"];
-const bonusByRank={"オーナー":40000000,"チーフ":35000000,"1級整備士":30000000,"2級整備士":25000000,"整備士":20000000,"見習い整備士":15000000};
-const defaultMembers=[
-["黒崎 蓮","オーナー"],["ねむ。","チーフ"],["すばる","整備士"],["POTATO WORLD","見習い整備士"],["朔麻 千秋","見習い整備士"],["ウィリアム ヘパリン","見習い整備士"],["コウ・フォン・ヴェルデン","見習い整備士"],["九条 風太","見習い整備士"],["ぴーなっつ","見習い整備士"],["白雪 千","見習い整備士"],["楠 みのん","見習い整備士"],["三都 ごろう","見習い整備士"]
+const materials=["鉄","鋼鉄","プラスチック","ゴム","アルミニウム","銅","金属くず","ガラス","布","ダクトテープ"];
+
+const weaponData=[
+["5.56x45mm弾","ammo","💥",[["銅",45],["鋼鉄",20]]],
+["9mm弾","ammo","💥",[["金属くず",15],["銅",30]]],
+["BZガス","other","🧪",[["アルミニウム",25],["ガラス",15],["プラスチック",30]]],
+["SMG（短機関銃）","smg","🔫",[["金属くず",50],["鉄",30],["鋼鉄",75]]],
+["SMG拡張マガジン","magazine","▣",[["金属くず",20],["鋼鉄",30]]],
+["アサルトライフル","rifle","🔫",[["金属くず",55],["鉄",30],["鋼鉄",90]]],
+["カービンライフル","rifle","🔫",[["金属くず",60],["鉄",30],["鋼鉄",80]]],
+["グリップ","attachment","◈",[["ゴム",25],["プラスチック",20]]],
+["コンペンセイター","attachment","◉",[["金属くず",20],["鋼鉄",30]]],
+["サプレッサー","attachment","◉",[["アルミニウム",25],["ゴム",15],["鋼鉄",35]]],
+["スペシャルカービン","rifle","🔫",[["アルミニウム",30],["金属くず",55],["鋼鉄",80]]],
+["スモールスコープ","scope","🔭",[["アルミニウム",25],["ガラス",20],["プラスチック",25]]],
+["タクティカルサプレッサー","attachment","◉",[["アルミニウム",30],["ゴム",15],["鋼鉄",45]]],
+["タクティカルフラッシュライト","light","🔦",[["ガラス",10],["プラスチック",25],["銅",15]]],
+["バール","other","🔧",[["金属くず",15],["鉄",35]]],
+["ピストル","pistol","🔫",[["金属くず",35],["鉄",20],["鋼鉄",55]]],
+["ピストル拡張マガジン","magazine","▣",[["金属くず",15],["鋼鉄",25]]],
+["フラッシュライト","light","🔦",[["ガラス",10],["プラスチック",25],["銅",15]]],
+["ブルパップライフル","rifle","🔫",[["アルミニウム",35],["金属くず",55],["鋼鉄",75]]],
+["バール※押収品","other","🔧",[["鉄",50],["鋼鉄",20]]],
+["ホログラフィックサイト","scope","🎯",[["アルミニウム",30],["ガラス",20],["プラスチック",30]]],
+["マイクロSMG","smg","🔫",[["アルミニウム",25],["金属くず",50],["鋼鉄",70]]],
+["マクロスコープ","scope","🔭",[["アルミニウム",20],["ガラス",15],["プラスチック",20]]],
+["ミディアムスコープ","scope","🔭",[["アルミニウム",30],["ガラス",25],["プラスチック",30]]],
+["ラージスコープ","scope","🔭",[["アルミニウム",35],["ガラス",30],["プラスチック",35]]],
+["ライフル拡張マガジン","magazine","▣",[["金属くず",25],["鋼鉄",35]]],
+["飛び出しナイフ","other","🗡️",[["ゴム",10],["鉄",25]]]
 ];
-const key="mechanicSystemV2";
-let state=JSON.parse(localStorage.getItem(key)||"null");
-if(!state){
- state={members:defaultMembers.map((x,i)=>({id:Date.now()+i,name:x[0],rank:x[1],memo:"",history:[{date:today(),from:"-",to:x[1]}]})),bonusRound:1,bonuses:[]};
+
+const handicraftData=[
+["大型爆弾※押収品","爆発物","💣",[["布",40],["金属くず",45],["鉄",55]]],
+["人型ドリル※押収品","工具","🛠️",[["金属くず",20],["鉄",50],["鋼鉄",35]]],
+["ロープ※押収品","工具","🪢",[["金属くず",20],["布",20]]],
+["ボルトカッター※押収品","工具","✂️",[["金属くず",10],["ダクトテープ",15],["鋼鉄",20]]],
+["ヘビーアーマー","防具","🦺",[["金属くず",35],["ダクトテープ",30],["鉄",40]]],
+["ブロートーチ※押収品","工具","🔥",[["金属くず",20],["金属くず",20],["鉄",30]]],
+["バッグ※押収品","バッグ","🎒",[["金属くず",20],["プラスチック",10],["布",30]]],
+["ハッキング用携帯電話※押収品","ハッキング","📱",[["ガラス",15],["プラスチック",40],["銅",25]]],
+["ハッキング用ノートPC※押収品","ハッキング","💻",[["アルミニウム",20],["プラスチック",50],["銅",30]]],
+["ハッキング用USB※押収品","ハッキング","💾",[["ガラス",15],["プラスチック",25],["銅",15]]],
+["ノートパソコン","電子機器","💻",[["アルミニウム",25],["プラスチック",60],["銅",35]]],
+["ドリル※押収品","工具","🔩",[["プラスチック",20],["金属くず",30],["鉄",35]]],
+
+["テルミット爆薬※押収品","爆発物","🔥",[["布",35],["ダクトテープ",25],["金属くず",40]]],
+["テルミット※押収品","爆発物","🧪",[["布",30],["ダクトテープ",20],["金属くず",30]]],
+["ガラスカッター※押収品","工具","🔪",[["ガラス",10],["鋼鉄",20]]],
+["カッター※押収品","工具","🔪",[["金属くず",10],["ダクトテープ",15],["鋼鉄",20]]],
+["ガスマスク","防具","😷",[["布",35],["ダクトテープ",30],["金属くず",15]]],
+["アーマー","防具","🦺",[["布",25],["ダクトテープ",30],["金属くず",40]]],
+["C4爆薬※押収品","爆発物","💣",[["布",45],["ダクトテープ",35],["金属くず",40]]],
+["C4 EXPLOSIVE※押収品","爆発物","💣",[["布",40],["ダクトテープ",35],["金属くず",30]]]
+];
+
+const datasets={weapon:weaponData,handicraft:handicraftData};
+const modeLabels={weapon:"武器クラフト",handicraft:"手芸クラフト"};
+const modeCats={
+ weapon:{all:"すべて",ammo:"弾薬",pistol:"ピストル",smg:"SMG",rifle:"ライフル",magazine:"マガジン",scope:"スコープ",attachment:"アタッチメント",light:"ライト",other:"その他"},
+ handicraft:{all:"すべて",爆発物:"爆発物",工具:"工具",防具:"防具",バッグ:"バッグ",ハッキング:"ハッキング",電子機器:"電子機器"}
+};
+
+const OLDKEY="weaponCraftingManagerV3";
+const KEY="craftingManagerV4";
+let old=JSON.parse(localStorage.getItem(OLDKEY)||"null");
+let state=JSON.parse(localStorage.getItem(KEY)||"null")||{
+ inventory:(old&&old.inventory)||{},
+ favorites:{weapon:[],handicraft:[]},
+ plan:{weapon:{},handicraft:{}},
+ mode:"weapon"
+};
+if(Array.isArray(state.favorites)) state.favorites={weapon:state.favorites,handicraft:[]};
+if(!state.favorites) state.favorites={weapon:[],handicraft:[]};
+if(!state.plan||Array.isArray(state.plan)) state.plan={weapon:{},handicraft:{}};
+if(!state.plan.weapon) state.plan.weapon={};
+if(!state.plan.handicraft) state.plan.handicraft={};
+if(!state.mode) state.mode="weapon";
+materials.forEach(m=>{if(state.inventory[m]===undefined)state.inventory[m]=0});
+const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+
+function data(){return datasets[state.mode]}
+function possible(x){
+ return Math.min(...x[3].map(m=>Math.floor((state.inventory[m[0]]||0)/m[1])));
 }
-function save(){localStorage.setItem(key,JSON.stringify(state))}
-function today(){return new Date().toISOString().slice(0,10)}
-function yen(n){return "￥"+Number(n||0).toLocaleString("ja-JP")}
-function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function cls(r){return {"オーナー":"owner","チーフ":"chief","1級整備士":"first","2級整備士":"second","整備士":"mechanic","見習い整備士":"trainee"}[r]||""}
-function rankOptions(selected=""){return ranks.map(r=>`<option ${r===selected?"selected":""}>${r}</option>`).join("")}
-function memberBonus(m){
- let b=state.bonuses.find(x=>x.memberId===m.id && x.round===state.bonusRound);
- return b||{memberId:m.id,round:state.bonusRound,amount:"",date:"",paid:false};
+function invHTML(){
+ return materials.map(m=>`<label class="inv"><span>${m}</span><input class="inv-input" data-m="${m}" type="number" min="0" value="${state.inventory[m]||0}"></label>`).join("");
+}
+function card(x){
+ const arr=data(), i=arr.indexOf(x), p=possible(x), f=state.favorites[state.mode].includes(i);
+ return `<article class="card">
+  <div class="top"><div class="icon">${x[2]}</div><div><div class="name">${x[0]}</div><div class="meta">${modeLabels[state.mode]} <span class="badge">${modeCats[state.mode][x[1]]||x[1]}</span></div></div></div>
+  <div class="body">
+   <div class="mats">${x[3].map(m=>`<span class="mat">${m[0]} <b>×${m[1]}</b></span>`).join("")}</div>
+   <div class="craft"><span>製作可能数</span><span class="${p>0?'ready':'zero'}">${p}個</span></div>
+   <div class="actions"><button onclick="addPlan(${i})">＋ 計画に追加</button><button class="fav" onclick="toggleFav(${i})">${f?'★ 登録済み':'☆ お気に入り'}</button></div>
+  </div>
+ </article>`;
+}
+function bindInventory(){
+ document.querySelectorAll(".inv-input").forEach(e=>e.oninput=()=>{
+   state.inventory[e.dataset.m]=Math.max(0,parseInt(e.value||0)||0);
+   save();renderAll();
+ });
+}
+function renderInv(){
+ document.querySelector("#dashInv").innerHTML=invHTML();
+ document.querySelector("#fullInv").innerHTML=invHTML();
+ bindInventory();
+}
+function renderFilters(){
+ const cats=modeCats[state.mode];
+ document.querySelector("#filters").innerHTML=Object.entries(cats).map(([k,v])=>`<button class="cat ${k==="all"?"active":""}" data-cat="${k}">${v}</button>`).join("");
+ document.querySelectorAll(".cat").forEach(b=>b.onclick=()=>{
+   document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
+   b.classList.add("active");renderRecipes();
+ });
+}
+function renderRecipes(){
+ const q=document.querySelector("#search").value.toLowerCase().trim();
+ const cat=document.querySelector(".cat.active")?.dataset.cat||"all";
+ const a=data().filter(x=>(cat==="all"||x[1]===cat)&&(!q||(x[0]+" "+x[3].map(m=>m[0]).join(" ")).toLowerCase().includes(q)));
+ document.querySelector("#recipeGrid").innerHTML=a.length?a.map(card).join(""):'<div class="empty">該当するレシピがありません。</div>';
+}
+function renderReady(){
+ const a=data().filter(x=>possible(x)>0);
+ document.querySelector("#readyGrid").innerHTML=a.length?a.map(card).join(""):'<div class="empty">現在作れる製作物はありません。</div>';
+ document.querySelector("#readyCount").textContent=a.length;
+}
+function renderFav(){
+ const a=state.favorites[state.mode].map(i=>data()[i]).filter(Boolean);
+ document.querySelector("#favGrid").innerHTML=a.length?a.map(card).join(""):'<div class="empty">お気に入りはありません。</div>';
+ document.querySelector("#favCount").textContent=a.length;
+}
+function toggleFav(i){
+ const f=state.favorites[state.mode];
+ state.favorites[state.mode]=f.includes(i)?f.filter(x=>x!==i):[...f,i];
+ save();renderAll();
+}
+function addPlan(i){
+ const p=state.plan[state.mode];
+ p[i]=(p[i]||0)+1;
+ save();renderAll();toast(data()[i][0]+" を計画に追加");
+}
+function setPlan(i,v){
+ const n=Math.max(1,parseInt(v||1)||1);
+ state.plan[state.mode][i]=n;save();renderAll();
+}
+function removePlan(i){delete state.plan[state.mode][i];save();renderAll()}
+function renderPlan(){
+ const p=state.plan[state.mode], keys=Object.keys(p).filter(i=>p[i]>0);
+ document.querySelector("#planRows").innerHTML=keys.length?keys.map(i=>{
+   const x=data()[i];
+   return `<div class="plan-row"><div><b>${x[0]}</b><div class="meta">${x[3].map(m=>m[0]+" ×"+m[1]).join(" / ")}</div></div><input class="qty" type="number" min="1" value="${p[i]}" onchange="setPlan(${i},this.value)"><span>×${p[i]}</span><button onclick="removePlan(${i})">削除</button></div>`;
+ }).join(""):'<div class="empty">クラフト計画は空です。</div>';
+ let total=keys.reduce((a,i)=>a+p[i],0);
+ document.querySelector("#planTotal").textContent=total+"個";
+ document.querySelector("#planCount").textContent=total;
+ const need={};
+ keys.forEach(i=>data()[i][3].forEach(m=>need[m[0]]=(need[m[0]]||0)+m[1]*p[i]));
+ const ds=materials.map(m=>[m,(need[m]||0)-(state.inventory[m]||0)]).filter(x=>x[1]>0);
+ document.querySelector("#deficits").innerHTML=ds.length?ds.map(x=>`<div class="def-item"><b>${x[0]} 不足 ${x[1]}</b><span>必要 ${need[x[0]]||0} / 所持 ${state.inventory[x[0]]||0}</span></div>`).join(""):'<div class="empty">不足素材はありません。</div>';
+}
+function renderReverse(){
+ document.querySelector("#reverseGrid").innerHTML=materials.map(m=>{
+   const a=data().filter(x=>x[3].some(y=>y[0]===m));
+   return `<div class="material-card"><h3>📦 ${m}</h3>${a.length?'<ul>'+a.map(x=>`<li>${x[0]} — ×${x[3].find(y=>y[0]===m)[1]}</li>`).join("")+'</ul>':'<p class="hint">使用レシピなし</p>'}</div>`;
+ }).join("");
 }
 function renderStats(){
- const paid=state.members.filter(m=>memberBonus(m).paid).length;
- const total=state.members.reduce((s,m)=>s+Number(memberBonus(m).amount||0),0);
- const counts=ranks.map(r=>state.members.filter(m=>m.rank===r).length);
- document.getElementById("stats").innerHTML=[
-  ["👥","総メンバー",state.members.length+"名"],["💰","今回支給済み",paid+" / "+state.members.length],["💴","今回総額",yen(total)],
-  ["🔴","未支給",state.members.length-paid+"名"],["📈","今月の階級変更",state.members.reduce((s,m)=>s+(m.history.filter(h=>h.date.slice(0,7)===today().slice(0,7)&&h.from!=="-").length),0)+"件"]
- ].map(x=>`<div class="stat"><div class="label">${x[0]} ${x[1]}</div><b>${x[2]}</b></div>`).join("");
- const unpaid=state.members.filter(m=>!memberBonus(m).paid);
- document.getElementById("bonusRates").innerHTML=ranks.map(r=>`<div class="member ${cls(r)}"><div class="name">${esc(r)}</div><div style="font-size:20px;font-weight:800;margin-top:7px">${yen(bonusByRank[r])}</div><div class="rank">満額基準・固定</div></div>`).join("");
- document.getElementById("unpaidDash").innerHTML=unpaid.length?`<div class="grid members">${unpaid.map(m=>`<div class="member ${cls(m.rank)}"><div class="name">${esc(m.name)}</div><div class="rank">${esc(m.rank)}</div></div>`).join("")}</div>`:`<div class="empty">🎉 全員支給済みです！</div>`;
+ document.querySelector("#recipeCount").textContent=data().length;
+ document.querySelector("#modeCount").textContent=state.mode==="weapon"?"武器":"手芸";
 }
-function setupFilters(){
- ["memberRank","bonusRank"].forEach(id=>{document.getElementById(id).innerHTML='<option value="all">全階級</option>'+rankOptions()});
- document.getElementById("mRank").innerHTML=rankOptions("見習い整備士");
+function renderAll(){
+ renderStats();renderFilters();renderInv();renderRecipes();renderReady();renderFav();renderPlan();renderReverse();
 }
-function renderMembers(){
- let q=document.getElementById("memberSearch").value.toLowerCase(), r=document.getElementById("memberRank").value;
- let arr=state.members.filter(m=>(!q||m.name.toLowerCase().includes(q))&&(r==="all"||m.rank===r));
- document.getElementById("memberList").innerHTML=arr.length?arr.map(m=>`
- <div class="member ${cls(m.rank)}">
-  <div class="head"><div><div class="name">${esc(m.name)}</div><div class="rank">現在：${esc(m.rank)}</div><span class="badge">${esc(m.rank)}</span></div><button class="btn" onclick="openMember(${m.id})">編集</button></div>
-  <div class="rank" style="margin-top:12px">📝 ${esc(m.memo||"メモなし")}</div>
-  <div style="margin-top:12px"><button class="btn" onclick="showPromotion(${m.id})">📈 昇格履歴を見る</button></div>
- </div>`).join(""):'<div class="empty">該当するメンバーはいません。</div>';
+function setMode(mode){
+ state.mode=mode;save();
+ document.querySelectorAll(".mode").forEach(x=>x.classList.toggle("active",x.dataset.mode===mode));
+ document.querySelector("#search").value="";
+ renderAll();
 }
-function renderBonus(){
- let q=document.getElementById("bonusSearch").value.toLowerCase(),r=document.getElementById("bonusRank").value,s=document.getElementById("bonusStatus").value;
- let arr=state.members.filter(m=>{let b=memberBonus(m);return(!q||m.name.toLowerCase().includes(q))&&(r==="all"||m.rank===r)&&(s==="all"||(s==="paid"?b.paid:!b.paid))});
- document.getElementById("bonusList").innerHTML=arr.length?arr.map(m=>{
-  let b=memberBonus(m);
-  return `<div class="member ${cls(m.rank)} ${b.paid?"paid":""}">
-   <div class="head"><div><div class="name">${esc(m.name)}</div><div class="rank">${esc(m.rank)}</div><span class="badge">${b.paid?"✅ 支給済み":"🔴 未支給"}</span></div>
-   <label class="check"><input type="checkbox" ${b.paid?"checked":""} onchange="togglePaid(${m.id},this.checked)"> 支給済み</label></div>
-   <div class="fields">
-    <div class="field"><label>支給額（階級別固定・満額）</label><input value="${yen(bonusByRank[m.rank])}" readonly></div>
-    <div class="field"><label>支給日</label><input type="date" value="${esc(b.date)}" onchange="setBonus(${m.id},'date',this.value)"></div>
-   </div>
-  </div>`}).join(""):'<div class="empty">該当するメンバーはいません。</div>';
-}
-function renderHistory(){
- let rows=[];
- [...state.bonuses].sort((a,b)=>(b.date||"").localeCompare(a.date||"")).forEach(b=>{
-  if(!b.paid)return; let m=state.members.find(x=>x.id===b.memberId); if(m)rows.push(`<tr><td>第${b.round}回</td><td>${esc(m.name)}</td><td>${esc(b.rankAtPayment||m.rank)}</td><td>${yen(b.amount)}</td><td>${esc(b.date)}</td></tr>`);
- });
- document.getElementById("historyTable").innerHTML=rows.length?rows.join(""):'<tr><td colspan="5" class="empty">まだ支給履歴がありません。</td></tr>';
-}
-function renderPromotion(){
- document.getElementById("promotionList").innerHTML=state.members.map(m=>`<div style="margin-bottom:25px"><h3 style="margin:0 0 12px">${esc(m.name)} <span class="badge ${cls(m.rank)}">${esc(m.rank)}</span></h3><div class="timeline">${m.history.slice().reverse().map(h=>`<div class="event"><b>${esc(h.from)} → ${esc(h.to)}</b><small>${esc(h.date)}</small></div>`).join("")}</div></div>`).join("");
-}
-function renderAll(){setupFilters();renderStats();renderMembers();renderBonus();renderHistory();renderPromotion()}
-function showPage(id){document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));document.getElementById(id).classList.remove("hidden");document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.page===id));renderAll()}
-document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
-["memberSearch","memberRank","bonusSearch","bonusRank","bonusStatus"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{renderMembers();renderBonus()}));
-function openMember(id=null){
- document.getElementById("memberModalTitle").textContent=id?"メンバー編集":"メンバー追加";
- document.getElementById("editId").value=id||"";
- let m=state.members.find(x=>x.id==id);
- document.getElementById("mName").value=m?.name||"";document.getElementById("mRank").innerHTML=rankOptions(m?.rank||"見習い整備士");document.getElementById("mMemo").value=m?.memo||"";document.getElementById("mOwner").checked=m?.owner||m?.rank==="オーナー";
- document.getElementById("memberModal").classList.add("show");
-}
-function saveMember(){
- let id=document.getElementById("editId").value,name=document.getElementById("mName").value.trim(),rank=document.getElementById("mRank").value,memo=document.getElementById("mMemo").value;
- if(!name)return alert("名前を入力してください。");
- let m=state.members.find(x=>x.id==id);
- if(m){if(m.rank!==rank)m.history.push({date:today(),from:m.rank,to:rank});m.name=name;m.rank=rank;m.memo=memo;m.owner=document.getElementById("mOwner").checked}
- else state.members.push({id:Date.now(),name,rank,memo,owner:document.getElementById("mOwner").checked,history:[{date:today(),from:"-",to:rank}]});
- save();closeModal("memberModal");renderAll();toast("メンバー情報を保存しました");
-}
-function setBonus(id,key,value){
- let b=state.bonuses.find(x=>x.memberId===id&&x.round===state.bonusRound);
- let m=state.members.find(x=>x.id===id);
- if(!b){b={memberId:id,round:state.bonusRound,amount:bonusByRank[m.rank],date:"",paid:false,rankAtPayment:m.rank};state.bonuses.push(b)}
- b[key]=value;if(key==="amount")b.amount=String(value).replace(/[^0-9]/g,"");save();renderAll();
-}
-function togglePaid(id,val){
- let b=state.bonuses.find(x=>x.memberId===id&&x.round===state.bonusRound),m=state.members.find(x=>x.id===id);
- if(val){
-  b=b||{memberId:id,round:state.bonusRound,amount:bonusByRank[m.rank],date:today(),paid:false,rankAtPayment:m.rank};
-  b.amount=bonusByRank[m.rank]; b.rankAtPayment=m.rank;
-  if(!b.date)b.date=today();
-  state.bonuses=state.bonuses.filter(x=>!(x.memberId===id&&x.round===state.bonusRound));state.bonuses.push(b);
-  document.getElementById("confirmText").innerHTML=`<b>${esc(m.name)}</b> にボーナスを支給済みにします。<br>金額：${yen(b.amount||0)}<br>支給日：${esc(b.date)}`;
-  document.getElementById("confirmBtn").onclick=()=>{b.paid=true;save();closeModal("confirmModal");renderAll();toast("支給済みにしました");};
-  document.getElementById("confirmModal").classList.add("show");
- }else{
-  if(b)b.paid=false;save();renderAll();toast("未支給に戻しました");
- }
-}
-function newBonus(){
- if(!confirm("新しいボーナス回を開始しますか？現在の支給履歴は保存されます。"))return;
- state.bonusRound++;save();renderAll();toast("第"+state.bonusRound+"回ボーナスを開始しました");
-}
-function showPromotion(id){
- let m=state.members.find(x=>x.id===id);alert(m.name+" の昇格履歴\n\n"+m.history.map(h=>h.date+"　"+h.from+" → "+h.to).join("\n"));
-}
-function closeModal(id){document.getElementById(id).classList.remove("show")}
-function toast(t){let e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2200)}
-function resetData(){if(confirm("全データを初期化しますか？")){localStorage.removeItem(key);location.reload()}}
+document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+ document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+ b.classList.add("active");document.getElementById(b.dataset.view).classList.add("active");
+});
+document.querySelector("#search").oninput=renderRecipes;
+document.querySelector("#resetInv").onclick=document.querySelector("#resetInv2").onclick=()=>{
+ materials.forEach(m=>state.inventory[m]=0);save();renderAll();toast("在庫をリセットしました");
+};
+document.querySelector("#clearPlan").onclick=()=>{
+ state.plan[state.mode]={};save();renderAll();toast("計画をクリアしました");
+};
+function toast(t){const e=document.querySelector("#toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1400)}
 renderAll();
 </script>
 </body>
