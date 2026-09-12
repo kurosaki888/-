@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>武器クラフト レシピ一覧</title>
+<style>
+:root{--bg:#0d0c12;--p:#191720;--p2:#282634;--line:#393646;--a:#646da0;--t:#f5f3f6;--m:#aaa6b4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#292742 0,#0d0c12 45%,#09080d 100%);color:var(--t);font-family:system-ui,"Noto Sans JP",sans-serif}
+header{position:sticky;top:0;z-index:5;background:#0d0c12ee;backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:18px 24px}
+.head{max-width:1250px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px}h1{font-size:24px;margin:0}.sub{font-size:12px;color:var(--m);margin-top:4px}
+input{width:400px;max-width:45vw;padding:12px 14px;border-radius:9px;border:1px solid var(--line);background:var(--p2);color:white;outline:0}
+main{max-width:1250px;margin:auto;padding:24px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.stat{background:#211f2acc;border:1px solid var(--line);border-radius:11px;padding:14px}.stat b{font-size:21px;display:block}.stat span{font-size:11px;color:var(--m)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}button{cursor:pointer;border:1px solid var(--line);background:var(--p2);color:white;border-radius:8px;padding:9px 14px}button.active,button:hover{background:var(--a);border-color:var(--a)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{background:linear-gradient(145deg,#282632,#19171f);border:1px solid var(--line);border-radius:12px;overflow:hidden}.top{display:flex;gap:12px;padding:15px;border-bottom:1px solid var(--line)}.icon{width:56px;height:56px;flex:none;border-radius:9px;background:#343240;display:grid;place-items:center;font-size:26px}.name{font-weight:700;font-size:16px;line-height:1.4}.no{font-size:11px;color:var(--m);margin-top:3px}.body{padding:14px}.label{font-size:11px;color:var(--m);margin-bottom:8px}.mats{display:flex;gap:7px;flex-wrap:wrap}.mat{background:#302e3d;border:1px solid #403d4e;border-radius:7px;padding:7px 9px;font-size:12px}.mat strong{font-size:14px}.empty{grid-column:1/-1;text-align:center;color:var(--m);padding:50px}
+footer{text-align:center;color:var(--m);font-size:11px;padding:30px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){header{padding:14px}.head{display:block}.search{margin-top:12px;width:100%;max-width:none}main{padding:15px 12px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="head"><div><h1>🔧 武器クラフト レシピ一覧</h1><div class="sub">ECO CRAFTING / クラフト台 製作レシピ管理</div></div><input id="search" placeholder="製作物・部品を検索…"></div></header>
+<main>
+<div class="stats">
+<div class="stat"><b>27</b><span>登録製作物</span></div>
+<div class="stat"><b>8</b><span>部品カテゴリ</span></div>
+<div class="stat"><b>765</b><span>最多必要数：金属板</span></div>
+<div class="stat"><b>8種</b><span>仕入れ管理対象</span></div>
+</div>
+<div class="filters">
+<button class="active" data-f="all">すべて</button><button data-f="weapon">武器</button><button data-f="ammo">弾薬</button><button data-f="attachment">アタッチメント</button><button data-f="tool">その他</button>
+</div>
+<section id="grid" class="grid"></section>
+</main>
+<footer>FiveM / ECO CRAFTING 用 レシピ管理ページ</footer>
+<script>
+const data=[
+["5.56x45mm弾","ammo","💥",[["コイル",45],["金属板",20]]],
+["9mm弾","ammo","💥",[["バネ・ギア",15],["コイル",30]]],
+["BZガス","tool","🧪",[["シート",25],["ガラス",15],["チューブ",30]]],
+["SMG（短機関銃）","weapon","🔫",[["バネ・ギア",50],["金属ブロック",30],["金属板",75]]],
+["SMG拡張マガジン","attachment","▣",[["バネ・ギア",20],["金属板",30]]],
+["アサルトライフル","weapon","🔫",[["バネ・ギア",55],["金属ブロック",30],["金属板",90]]],
+["カービンライフル","weapon","🔫",[["バネ・ギア",60],["金属ブロック",30],["金属板",80]]],
+["グリップ","attachment","◈",[["ゴム",25],["チューブ",20]]],
+["コンペンセイター","attachment","◉",[["バネ・ギア",20],["金属板",30]]],
+["サプレッサー","attachment","◉",[["シート",25],["ゴム",15],["金属板",35]]],
+["スペシャルカービン","weapon","🔫",[["シート",30],["バネ・ギア",55],["金属板",80]]],
+["スモールスコープ","attachment","🔭",[["シート",25],["ガラス",20],["チューブ",25]]],
+["タクティカルサプレッサー","attachment","◉",[["シート",30],["ゴム",15],["金属板",45]]],
+["タクティカルフラッシュライト","attachment","🔦",[["ガラス",10],["チューブ",25],["コイル",15]]],
+["バール","tool","🔧",[["バネ・ギア",15],["金属ブロック",35]]],
+["ピストル","weapon","🔫",[["バネ・ギア",35],["金属ブロック",20],["金属板",55]]],
+["ピストル拡張マガジン","attachment","▣",[["バネ・ギア",15],["金属板",25]]],
+["フラッシュライト","attachment","🔦",[["ガラス",10],["チューブ",25],["コイル",15]]],
+["ブルパップライフル","weapon","🔫",[["シート",35],["バネ・ギア",55],["金属板",75]]],
+["バール※押収品","tool","🔧",[["金属ブロック",50],["金属板",20]]],
+["ホログラフィックサイト","attachment","🎯",[["シート",30],["ガラス",20],["チューブ",30]]],
+["マイクロSMG","weapon","🔫",[["シート",25],["バネ・ギア",50],["金属板",70]]],
+["マクロスコープ","attachment","🔭",[["シート",20],["ガラス",15],["チューブ",20]]],
+["ミディアムスコープ","attachment","🔭",[["シート",30],["ガラス",25],["チューブ",30]]],
+["ラージスコープ","attachment","🔭",[["シート",35],["ガラス",30],["チューブ",35]]],
+["ライフル拡張マガジン","attachment","▣",[["バネ・ギア",25],["金属板",35]]],
+["飛び出しナイフ","tool","🗡️",[["ゴム",10],["金属ブロック",25]]]
+];
+let filter="all";
+const grid=document.getElementById("grid"),search=document.getElementById("search");
+function render(){
+ const q=search.value.toLowerCase().trim();
+ const list=data.filter(x=>(filter==="all"||x[1]===filter)&&(!q||(x[0]+" "+x[3].map(y=>y[0]).join(" ")).toLowerCase().includes(q)));
+ grid.innerHTML=list.length?list.map((x,i)=>`<article class="card"><div class="top"><div class="icon">${x[2]}</div><div><div class="name">${x[0]}</div><div class="no">レシピ #${data.indexOf(x)+1}</div></div></div><div class="body"><div class="label">必要材料</div><div class="mats">${x[3].map(m=>`<div class="mat">${m[0]} <strong>×${m[1]}</strong></div>`).join("")}</div></div></article>`).join(""):'<div class="empty">該当するレシピがありません。</div>';
+}
+document.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-f]").forEach(x=>x.classList.remove("active"));b.classList.add("active");filter=b.dataset.f;render()});
+search.oninput=render;render();
+</script>
+</body>
+</html>
